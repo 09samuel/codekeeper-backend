@@ -59,6 +59,9 @@
   },
   "dependencies": {
     "@y/protocols": "^1.0.6-1",
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.3",
+    "jsonwebtoken": "^9.0.2",
     "lib0": "^0.2.102"
   },
   "devDependencies": {

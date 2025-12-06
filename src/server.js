@@ -60,7 +60,7 @@ const wss = new WebSocket.Server({ noServer: true });
 const connectionCounts = new Map(); // docId -> count
 const connectionTimers = new Map(); // docId -> setTimeout reference
 
-const API_BASE_URL = process.env.API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key';
 
 /**

@@ -391,7 +391,29 @@ async function saveDocumentToBackend(docName, docId) {
     // @ts-ignore
     if (error.response) {
       // @ts-ignore
-      console.error(`[${docId}] Backend response:`, error.response.data);
+      const status = error.response.status;
+      // @ts-ignore
+      const data = error.response.data;
+
+      if (status === 413) {
+        console.error(`[${docId}] ⚠️ STORAGE QUOTA EXCEEDED`);
+        if (data.usedMB && data.limitMB) {
+          console.error(`[${docId}]    Used: ${data.usedMB} MB / ${data.limitMB} MB`);
+          console.error(`[${docId}]    Required: ${data.requiredMB || 'N/A'} MB`);
+        }
+        console.error(`[${docId}]    Document changes NOT saved to S3`);
+        console.error(`[${docId}]    Changes preserved in Yjs memory until user frees storage`);
+        
+        //Broadcast quota error to connected users
+        broadcastCollabEvent(docId, 'storage-quota-exceeded', {
+          error: 'Storage limit exceeded',
+          used: data.usedMB,
+          limit: data.limitMB,
+          message: 'Your changes are preserved but cannot be saved. Please delete some files to free up space.'
+        });
+      } else {
+        console.error(`[${docId}] Backend response (${status}):`, data);
+      }
     }
   }
 }

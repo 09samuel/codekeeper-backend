@@ -1,0 +1,22 @@
+name: Keep WebSocket Server Alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    name: Ping WebSocket Server
+    
+    steps:
+      - name: Ping the WebSocket service
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.WEBSOCKET_SERVICE_URL }}/ping)
+          echo "Response status: $response"
+          if [ $response -eq 200 ]; then
+            echo "✅ WebSocket server is alive"
+          else
+            echo "⚠️ WebSocket server returned status $response"
+          fi

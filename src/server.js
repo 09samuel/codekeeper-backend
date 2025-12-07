@@ -13,6 +13,25 @@ const globalCollabClients = new Map(); // userId -> Set of WebSocket connections
 
 const server = http.createServer((request, response) => {
   console.log('📥 HTTP request:', request.method, request.url);
+
+  // Health check / ping endpoint
+  if (request.method === 'GET' && request.url === '/ping') {
+    const healthData = {
+      status: 'ok',
+      message: 'WebSocket server is alive',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      activeDocuments: docs.size,
+      globalCollaborators: globalCollabClients.size,
+      port: PORT
+    };
+    
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.end(JSON.stringify(healthData));
+    console.log('✅ Ping endpoint hit - server healthy');
+    return;
+  }
+
   
   // Handle collaborator event broadcasting
   if (request.method === 'POST' && request.url === '/collab-event') {
